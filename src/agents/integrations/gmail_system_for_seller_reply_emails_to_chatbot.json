@@ -1,0 +1,233 @@
+{
+  "name": "Gmail system for seller reply emails to chatbot",
+  "nodes": [
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "filters": {}
+      },
+      "type": "n8n-nodes-base.gmailTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        0,
+        0
+      ],
+      "id": "f41d8f33-f2b6-4a69-a7ff-26168a1fdbd5",
+      "name": "Gmail Trigger",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "MWyLLBCvpDXauXgk",
+          "name": "Harshil Baminton"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.snippet }}",
+        "options": {
+          "systemMessage": "Basically You will recieve mostly a  reply from the seller in email that seller has told the date and time along with pickup location(present in Seller's Data sheet) for the buyer so that buyer can pickup his item also in the end it must contain CollegeKart as name. What you have to do is simply craft a beautiful message and send it to Buyer email address present in Order placed Sheet and with all the details of the seller present in Sellers Data sheet. In a beautiful manner also in the end of message write Regards,College Kart like in professional email. Also to ignore every other email recieved and don't do anything only act for seller email"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        208,
+        0
+      ],
+      "id": "509846eb-35e4-45eb-b916-b0d5abf93d3e",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        80,
+        192
+      ],
+      "id": "b68a0adf-05f6-4f08-91f9-25fd7dddd9be",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "bcf0izKW54oCVce6",
+          "name": "Gautam bhai ki  latest new API key"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('To', ``, 'string') }}",
+        "subject": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Subject', ``, 'string') }}",
+        "message": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Message', ``, 'string') }}",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmailTool",
+      "typeVersion": 2.2,
+      "position": [
+        576,
+        208
+      ],
+      "id": "6a41dffd-14bc-45ac-b3b7-c1f9eca45aa7",
+      "name": "Send a message in Gmail",
+      "webhookId": "5fcadba4-e3fc-4347-965d-a2b80f7652a5",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "MWyLLBCvpDXauXgk",
+          "name": "Harshil Baminton"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1Exg4xiqBra8XcEEYUm73GEy88JnciAvaLioDMKgM_1A",
+          "mode": "list",
+          "cachedResultName": "college Management",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Exg4xiqBra8XcEEYUm73GEy88JnciAvaLioDMKgM_1A/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 486613308,
+          "mode": "list",
+          "cachedResultName": "Order Placed",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Exg4xiqBra8XcEEYUm73GEy88JnciAvaLioDMKgM_1A/edit#gid=486613308"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.7,
+      "position": [
+        416,
+        224
+      ],
+      "id": "a6967ac1-d6a7-4cbd-8d81-34b58415940c",
+      "name": "Get Buyer's Email",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "YCFHdfhGndkIe20t",
+          "name": "Google Sheets account 5"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1Exg4xiqBra8XcEEYUm73GEy88JnciAvaLioDMKgM_1A",
+          "mode": "list",
+          "cachedResultName": "college Management",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Exg4xiqBra8XcEEYUm73GEy88JnciAvaLioDMKgM_1A/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Seller's Data",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Exg4xiqBra8XcEEYUm73GEy88JnciAvaLioDMKgM_1A/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.7,
+      "position": [
+        320,
+        224
+      ],
+      "id": "76b8cac9-84e8-4c49-8d57-91e15b49143f",
+      "name": "Get pickup location",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "YCFHdfhGndkIe20t",
+          "name": "Google Sheets account 5"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Gmail Trigger": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        []
+      ]
+    },
+    "Send a message in Gmail": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Buyer's Email": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get pickup location": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "versionId": "08ca1f2d-96d5-416b-ac4b-fd30be0c05d8",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "4f077bad61d9e8aa2aa1d8d078ea429321830c274a91043aeb574425383e4712"
+  },
+  "id": "iuiuVAsDdoFV1rm8",
+  "tags": []
+}

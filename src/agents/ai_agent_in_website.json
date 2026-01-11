@@ -1,0 +1,593 @@
+{
+  "name": "AI agent in website",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "457bf464-e738-4c3b-97a4-edc0f82d97b3",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "baf5a6ed-8657-436c-aaca-b7b2bb4db483",
+      "name": "Webhook",
+      "webhookId": "457bf464-e738-4c3b-97a4-edc0f82d97b3"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.body.message }}",
+        "options": {
+          "systemMessage": "Constant Rule :- Just write everything beaituflly in html tags in clean formattted manner\n\n## Role & Persona\nYou are the \"CollegeKart Assistant,\" a friendly and reliable AI coordinator for a student-to-student marketplace. Your goal is to help students buy and sell essential academic items (like Mini Drafters, Scientific Calculators, Lab Coats, etc.) at fair prices. You represent a safe, transparent alternative to overpriced or low-quality second-hand sales.\n\n## Communication Style\n- Student-Friendly: Use a helpful, polite, and slightly informal tone (e.g., \"Hey there!\", \"Hope your labs are going well!\").\n- Transparent: Clearly state prices and conditions.\n- Concise: Keep  messages short and easy to read on a mobile screen.\n\n## Operational Rules\n\n. Catalog Access: You have access to a Google Sheet containing: Enrollment ID, Item, Price, College, and Year. Use this data to answer availability queries.\n. Configuration\n--- When the chat is initiated first time you must make sure that if the user has not provided his email id you don't move forward when the user has provided his email id you then simply sent an 6 digit OTP to that email id with a good markdown format and then store that OTP in \"WebsiteVerifyingEmails  sheet place in OTP column the email of user and status to unverified\n--- Now ask the user to enter the OTP sent to his email \n--- IF the OTP is correct then say to user Congratulations you are successfully verified and change the status column in WebsiteVerifyingEmails to Verified\n--- IF the OTP is incorrect then say to it Enter the OTP again and perform above work again\n--- NUmber of attemps assume it to be 4 only\n--- If the User fails then say you have failed you can try it after 30 min\n--- To check successful configuration you can simply check the Status column in WebsiteVerifyingEmails sheet you can guide the User about this CollegeKart Assistant  and continue the below procedure\n\n. Buying Process: \n   - Ask student his/her Name,College,Branch,Year  ask again that detail the one he not provided and don't move forward if student has not entered all the details\n   - Ask the student what item they are looking for.\n   -\n   - Show them the available options from the list with price along with all sellers detail mentioned in sheet in formatted manenr.\n   - If they agree to a price, explain that the item can be collected directly from the designated college pickup point after the order is logged.\n   - In background just store all the details(Buyer Email,Name,College,Branch,Year) in Order Placed sheet, and in Order status just write two things Pending or Recieved and write Pending by default\n   -In background send the message to seller's email with respect to the item that Buyer has purchased. The message should be like your order has been placed,It include details of the buyer(Email,name,college,branch,year) and the message ask the seller to tell the date and time so that the buyer can take his/her product in end of message just write (Yours faithfully/lovingly etc) College Kart. Once received the date and time then just simply message that date and time to the buyer email address beautifully and in end of message just write (Yours faithfully/lovingly etc) College Kart.\n\n. Selling Process: (If applicable) \n   -Ask sellers there Name, College, Branch,Year,Item name,Price,pickup location they want to sell. If the user provide incomplete details ask him/her one more time and append it to Seller's Data sheet(Seller's Email,Name,College,Branch,Year,Item Name,price,pickup location).  \n\n\n. NSFW protection make sure they sell those items that are applicable to college not other than that otherwise you can allow almost every item that is healthy filled with knowledge for a student. Books,Equipments are allowed if you find anything that is different then just go in Permission sheet and tell the client this will require moderator permission and ask the questions Why you are selling ? and For Whom ? And add the answers in the expected columns inside Permission sheeet\n6. Trust & Safety: Remind users that this platform ensures quality checks, unlike random senior-to-junior handoffs.\n\n## Transaction Workflow\n- Step 1: Identify the user's need (Buy/Sell).\n- Step 2: Search the provided data for the requested item.\n- Step 3: Finalize the \"Order Placed\" status and provide instructions for the on-campus pickup.\n\n## Constraints\n- Do not negotiate prices; they are fixed by the seller/platform.\n- If an item is not in the Google Sheet, politely inform the student and offer to notify them when it's back in stock.\n\n\n## Critical Instruction for n8n Integration\nWhen a user decides to buy or sell in end, you must output a final summary in a good format \n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        208,
+        0
+      ],
+      "id": "cc68adb5-edcf-4bd8-8bdd-94cbcf3ba247",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        80,
+        208
+      ],
+      "id": "f42a7816-e5be-473a-864b-d6a073622b89",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "1QLPPHJut2bwn5lY",
+          "name": "something something"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $json.headers.host }}",
+        "contextWindowLength": 20
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        224,
+        208
+      ],
+      "id": "8d73e6de-b025-4e78-9c67-5fde64381310",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1Exg4xiqBra8XcEEYUm73GEy88JnciAvaLioDMKgM_1A",
+          "mode": "list",
+          "cachedResultName": "college Management",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Exg4xiqBra8XcEEYUm73GEy88JnciAvaLioDMKgM_1A/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Seller's Data",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Exg4xiqBra8XcEEYUm73GEy88JnciAvaLioDMKgM_1A/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.7,
+      "position": [
+        704,
+        224
+      ],
+      "id": "9a068785-b38c-4036-9c5f-cf225a3944b9",
+      "name": "Reading Seller's Data",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "YCFHdfhGndkIe20t",
+          "name": "Google Sheets account 5"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1Exg4xiqBra8XcEEYUm73GEy88JnciAvaLioDMKgM_1A",
+          "mode": "list",
+          "cachedResultName": "college Management",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Exg4xiqBra8XcEEYUm73GEy88JnciAvaLioDMKgM_1A/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Seller's Data",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Exg4xiqBra8XcEEYUm73GEy88JnciAvaLioDMKgM_1A/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Seller's Email": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Seller_s_Email', ``, 'string') }}",
+            "Seller's Name": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Seller_s_Name', ``, 'string') }}",
+            "Item": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Item', ``, 'string') }}",
+            "Price": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Price', ``, 'string') }}",
+            "Seller's College": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Seller_s_College', ``, 'string') }}",
+            "Seller's Year": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Seller_s_Year', ``, 'string') }}",
+            "Seller's Delivery Location": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Seller_s_Delivery_Location', ``, 'string') }}"
+          },
+          "matchingColumns": [
+            "Seller's Email"
+          ],
+          "schema": [
+            {
+              "id": "Seller's Email",
+              "displayName": "Seller's Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Seller's Name",
+              "displayName": "Seller's Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Item",
+              "displayName": "Item",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Price",
+              "displayName": "Price",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Seller's College",
+              "displayName": "Seller's College",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Seller's Year",
+              "displayName": "Seller's Year",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Seller's Delivery Location",
+              "displayName": "Seller's Delivery Location",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.7,
+      "position": [
+        560,
+        224
+      ],
+      "id": "9497957a-50c2-41e0-aa44-a9d713d3314e",
+      "name": "Appending Seller's Data",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "YCFHdfhGndkIe20t",
+          "name": "Google Sheets account 5"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1Exg4xiqBra8XcEEYUm73GEy88JnciAvaLioDMKgM_1A",
+          "mode": "list",
+          "cachedResultName": "college Management",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Exg4xiqBra8XcEEYUm73GEy88JnciAvaLioDMKgM_1A/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 486613308,
+          "mode": "list",
+          "cachedResultName": "Order Placed",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Exg4xiqBra8XcEEYUm73GEy88JnciAvaLioDMKgM_1A/edit#gid=486613308"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Seller's Email": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Seller_s_Email__using_to_match_', ``, 'string') }}",
+            "Seller_name": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Seller_name', ``, 'string') }}",
+            "Buyer's Email": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Buyer_s_Email', ``, 'string') }}",
+            "Buyer_name": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Buyer_name', ``, 'string') }}",
+            "Item Buyed": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Item_Buyed', ``, 'string') }}",
+            "Order status": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Order_status', ``, 'string') }}",
+            "Date_order_placed": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Date_order_placed', ``, 'string') }}"
+          },
+          "matchingColumns": [
+            "Seller's Email"
+          ],
+          "schema": [
+            {
+              "id": "Seller's Email",
+              "displayName": "Seller's Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Seller_name",
+              "displayName": "Seller_name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Buyer's Email",
+              "displayName": "Buyer's Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Buyer_name",
+              "displayName": "Buyer_name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Item Buyed",
+              "displayName": "Item Buyed",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Order status",
+              "displayName": "Order status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Date_order_placed",
+              "displayName": "Date_order_placed",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.7,
+      "position": [
+        448,
+        208
+      ],
+      "id": "08c2ff80-43b7-40d0-b39c-41e19fb99387",
+      "name": "Appending Order Placed",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "YCFHdfhGndkIe20t",
+          "name": "Google Sheets account 5"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1Exg4xiqBra8XcEEYUm73GEy88JnciAvaLioDMKgM_1A",
+          "mode": "list",
+          "cachedResultName": "college Management",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Exg4xiqBra8XcEEYUm73GEy88JnciAvaLioDMKgM_1A/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1612700692,
+          "mode": "list",
+          "cachedResultName": "Permission",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Exg4xiqBra8XcEEYUm73GEy88JnciAvaLioDMKgM_1A/edit#gid=1612700692"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Seller's Email": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Seller_s_Email__using_to_match_', ``, 'string') }}",
+            "Seller's Name": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Seller_s_Name', ``, 'string') }}",
+            "Item": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Item', ``, 'string') }}",
+            "Why you are selling this product ?": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Why_you_are_selling_this_product__', ``, 'string') }}",
+            "For whom ?": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('For_whom__', ``, 'string') }}"
+          },
+          "matchingColumns": [
+            "Seller's Email"
+          ],
+          "schema": [
+            {
+              "id": "Seller's Email",
+              "displayName": "Seller's Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Seller's Name",
+              "displayName": "Seller's Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Item",
+              "displayName": "Item",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Why you are selling this product ?",
+              "displayName": "Why you are selling this product ?",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "For whom ?",
+              "displayName": "For whom ?",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.7,
+      "position": [
+        848,
+        224
+      ],
+      "id": "b0007709-5808-47e4-9fe5-b7a3af2a4dcc",
+      "name": "Permisson sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "YCFHdfhGndkIe20t",
+          "name": "Google Sheets account 5"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        640,
+        -16
+      ],
+      "id": "2619ab50-8063-4fb9-9215-42954486008b",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('To', ``, 'string') }}",
+        "subject": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Subject', ``, 'string') }}",
+        "message": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Message', ``, 'string') }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmailTool",
+      "typeVersion": 2.2,
+      "position": [
+        336,
+        208
+      ],
+      "id": "a81d5694-218f-426f-b334-eabfff16841c",
+      "name": "Send a message in Gmail",
+      "webhookId": "64a39333-83de-4b13-8d63-234779061f5e",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "MWyLLBCvpDXauXgk",
+          "name": "Harshil Baminton"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Reading Seller's Data": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Appending Seller's Data": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Appending Order Placed": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Permisson sheet": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a message in Gmail": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "versionId": "5fbec09b-6289-4264-bc33-1513a7726672",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "4f077bad61d9e8aa2aa1d8d078ea429321830c274a91043aeb574425383e4712"
+  },
+  "id": "pQKkM1enGslPYQEg",
+  "tags": []
+}
